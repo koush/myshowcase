@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.koushikdutta.myshowcase">
+
+    <application>
+        <activity android:name=".ShowcaseActivity" android:theme="@style/ShowcaseTheme" />
+    </application>
+
+</manifest>

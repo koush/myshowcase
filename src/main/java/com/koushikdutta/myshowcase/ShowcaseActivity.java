@@ -152,7 +152,7 @@ public class ShowcaseActivity extends WindowChromeCompatActivity {
 
         @Override
         public int appColorPrimary() {
-            return 0xffffc117;
+            return 0xffff7d19;
         }
     }
 

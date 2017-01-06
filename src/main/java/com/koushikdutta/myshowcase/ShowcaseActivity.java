@@ -1,23 +1,16 @@
 package com.koushikdutta.myshowcase;
 
 import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.animation.AnimatorCompatHelper;
-import android.support.v4.animation.ValueAnimatorCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,19 +25,15 @@ import java.util.ArrayList;
 
 public class ShowcaseActivity extends WindowChromeCompatActivity {
     public abstract static class SimpleFragment extends Fragment {
-        public abstract int appIcon();
-        public abstract String appName();
-        public abstract String appDescription();
-        public abstract String appPackageName();
-        public abstract int appColorPrimary();
+        public abstract ClockworkModProduct getProduct();
 
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View ret = inflater.inflate(R.layout.showcase_fragment, container, false);
-            ((ImageView)ret.findViewById(R.id.icon)).setImageResource(appIcon());
-            ((TextView)ret.findViewById(R.id.name)).setText(appName());
-            ((TextView)ret.findViewById(R.id.description)).setText(appDescription());
+            ((ImageView)ret.findViewById(R.id.icon)).setImageResource(getProduct().appIcon());
+            ((TextView)ret.findViewById(R.id.name)).setText(getProduct().appName());
+            ((TextView)ret.findViewById(R.id.description)).setText(getProduct().appDescription());
 
             ret.findViewById(R.id.next)
             .setOnClickListener(new View.OnClickListener() {
@@ -58,11 +47,7 @@ public class ShowcaseActivity extends WindowChromeCompatActivity {
             .setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final String appPackageName = appPackageName();
-                    try {
-                        startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
-                    } catch (android.content.ActivityNotFoundException anfe) {
-                    }
+                    getProduct().openPlayStore(getActivity());
                 }
             });
 
@@ -77,136 +62,36 @@ public class ShowcaseActivity extends WindowChromeCompatActivity {
 
     public static class AllCastFragment extends SimpleFragment {
         @Override
-        public int appIcon() {
-            return R.drawable.allcast_web_hi_res_512;
-        }
-
-        @Override
-        public String appName() {
-            return "AllCast";
-        }
-
-        @Override
-        public String appDescription() {
-            return "Send videos to your Chromecast, Roku, Xbox, Apple TV, or Smart TV";
-        }
-
-        @Override
-        public String appPackageName() {
-            return "com.koushikdutta.cast";
-        }
-
-        @Override
-        public int appColorPrimary() {
-            return 0xffc74b46;
+        public ClockworkModProduct getProduct() {
+            return ClockworkModProduct.ALLCAST;
         }
     }
 
     public static class VysorFragment extends SimpleFragment {
         @Override
-        public int appIcon() {
-            return R.drawable.vysor_web_hi_res_512;
-        }
-
-        @Override
-        public String appName() {
-            return "Vysor";
-        }
-
-        @Override
-        public String appDescription() {
-            return "Vysor lets you view and control your Android on your computer.";
-        }
-
-        @Override
-        public String appPackageName() {
-            return "com.koushikdutta.vysor";
-        }
-
-        @Override
-        public int appColorPrimary() {
-            return 0xff008fcc;
+        public ClockworkModProduct getProduct() {
+            return ClockworkModProduct.VYSOR;
         }
     }
 
     public static class MirrorFragment extends SimpleFragment {
         @Override
-        public int appIcon() {
-            return R.drawable.mirror_web_hi_res_512;
-        }
-
-        @Override
-        public String appName() {
-            return "Mirror";
-        }
-
-        @Override
-        public String appDescription() {
-            return "Record your Android's screen or cast it to Fire TV, Apple TV, or Chrome.";
-        }
-
-        @Override
-        public String appPackageName() {
-            return "com.koushikdutta.mirror";
-        }
-
-        @Override
-        public int appColorPrimary() {
-            return 0xffff7d19;
+        public ClockworkModProduct getProduct() {
+            return ClockworkModProduct.MIRROR;
         }
     }
 
     public static class HeliumFragment extends SimpleFragment {
         @Override
-        public int appIcon() {
-            return R.drawable.helium_web_hi_res_512;
-        }
-
-        @Override
-        public String appName() {
-            return "Helium";
-        }
-
-        @Override
-        public String appDescription() {
-            return "Backup, restore, and sync your apps.";
-        }
-
-        @Override
-        public String appPackageName() {
-            return "com.koushikdutta.backup";
-        }
-
-        @Override
-        public int appColorPrimary() {
-            return 0xff4CAF50;
+        public ClockworkModProduct getProduct() {
+            return ClockworkModProduct.HELIUM;
         }
     }
 
     public static class InkwireFragment extends SimpleFragment {
         @Override
-        public int appIcon() {
-            return R.drawable.inkwire_web_hi_res_512;
-        }
-
-        @Override
-        public String appName() {
-            return "Inkwire";
-        }
-
-        @Override
-        public String appDescription() {
-            return "Inkwire lets you easily share your screen to another Android user.";
-        }
-
-        @Override
-        public String appPackageName() {
-            return "com.koushikdutta.inkwire";
-        }
-
-        @Override
-        public int appColorPrimary() {
-            return 0xff3F51B5;
+        public ClockworkModProduct getProduct() {
+            return ClockworkModProduct.INKWIRE;
         }
     }
 
@@ -251,7 +136,7 @@ public class ShowcaseActivity extends WindowChromeCompatActivity {
             }
 
             SimpleFragment f = (SimpleFragment)object;
-            int colorPrimary = f.appColorPrimary();
+            int colorPrimary = f.getProduct().appColorPrimary();
             currentAnimation = fadeBackground(ShowcaseActivity.this, currentAnimation, colorPrimary);
         }
     }
@@ -295,7 +180,7 @@ public class ShowcaseActivity extends WindowChromeCompatActivity {
     PagerAdapter adapter;
 
     void addFragment(PagerAdapter adapter, LinearLayout dots, SimpleFragment f) {
-        if (f.appPackageName().equals(getPackageName()))
+        if (f.getProduct().appPackageName().equals(getPackageName()))
             return;
 
         adapter.fragments.add(f);
